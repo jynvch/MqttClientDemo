@@ -35,7 +35,10 @@ public class MqttService {
     }
 
     public void publish(String topic, String payload) throws MqttException {
-        log.info("publish 上报给服务器-------topic:{},payload:{}", topic, payload);
+        log.info("==========================");
+//        log.info("publish 上报给服务器-------topic:{},payload:{}", topic, payload);
+        System.out.printf("publish 上报给服务器-------topic:%s,payload:%s", topic, payload);
+        log.info("==========================");
         publish(topic, payload, 2, false);
     }
 

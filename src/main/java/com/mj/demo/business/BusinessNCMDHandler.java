@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,19 +30,26 @@ public class BusinessNCMDHandler {
     AtomicInteger psbStart = new AtomicInteger(0);
 
     {
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0010").area("A101").build());
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0011").area("A102").build());
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0011").area("A103").build());
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0011").area("A104").build());
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0011").area("A105").build());
+        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0001").area("A101").build());
+        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0002").area("A102").build());
+        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0003").area("A103").build());
+//        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0004").area("A104").build());
+//        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0005").area("A105").build());
+
+
+//        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0010").area("A101").build());
+//        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0011").area("A102").build());
+//        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0012").area("A103").build());
+//        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0013").area("A104").build());
+//        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0014").area("A105").build());
 
         //默认4个
         psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0001").area("B101").build());
         psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0002").area("B102").build());
         psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0003").area("B103").build());
         psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0004").area("B104").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0004").area("B105").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0004").area("B106").build());
+        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0005").area("B105").build());
+        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0006").area("B106").build());
 
     }
 
@@ -62,7 +70,7 @@ public class BusinessNCMDHandler {
 
     public RackAreaInfo getOne(List<RackAreaInfo> list, AtomicInteger startValue) {
         if (startValue.get() < list.size() - 1) {
-            int start = startValue.incrementAndGet();
+            int start = startValue.getAndIncrement();
             return list.get(start);
         } else {
             //循环获取
@@ -74,7 +82,7 @@ public class BusinessNCMDHandler {
     public void processMessage(String topic, String payload) {
         MqttService mqttService = SpringUtils.getBean(MqttService.class);
 
-        List<Integer> dealSequenceList = Lists.newArrayList(305, 306);
+        List<Integer> dealSequenceList = Lists.newArrayList(308, 309);
         try {
             //NCMD解析
             Map msg = JSON.parseObject(payload, Map.class);
@@ -101,7 +109,8 @@ public class BusinessNCMDHandler {
                     if (rackCode != null) {
                         //原始样品申请库位
                         log.info("------------原始样品申请库位 rackCode:{}", rackCode);
-                        byRackType = getByRackType(rackCode.substring(0, 5));
+//                        byRackType = getByRackType(rackCode.substring(0, 5));
+                        byRackType = pwjRackAreaInfoList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
                     } else {
                         //耗材盘架申请库位
                         String rackType = (String) body.get("rackType");
@@ -115,6 +124,7 @@ public class BusinessNCMDHandler {
                     if (dealSequenceList.contains(sequenceId)) {
                         if (byRackType == null) {
                             log.error("----------------不对库位询问进行上报-没有找到此盘架类型,序列:{}", sequenceId);
+                            return;
                         }
                         String allocationAreaMsg = "{\"services\":[{\"eventTime\":\"20250611T091212Z\",\"eventParams\":{\"strID\":\"" + strID + "\"," +
                                 "\"strMethod\":\"AllocationArea2\",\"body\":{\"state\":0,\"rackCode\":\"" + byRackType.getRackCode() + "\"," +
