@@ -31,12 +31,16 @@ import java.util.Map;
 @Slf4j
 public class ApacheHttpClientPost {
 
-    static String cookieStr = "Hm_lvt_a4471dcb99dc909bee559e7792f51c7f=1748227382; ZDEDebuggerPresent=php,phtml,php3; PHPSESSID=3pt4qu4ofek792umdn4ft3hpj0; powercms_auth=28f1jUG7v5yG2fjTT6aUqrNTrmFUq8u0HqcihV%2Fq%2BSFkXIPgGQNCNlER4lAwDiPzUOMdwKkVSO%2BAgErhOyBIEZBTk6jQkDme2OXhM4YskGAwXvl5suHZLB88ea55%2BIi8e2vSmT3YPJcfqlQsVH3o; acc_auth=0";
+    //用户的cookie
+    static String cookieStr = "Hm_lvt_a4471dcb99dc909bee559e7792f51c7f=1748227382; ZDEDebuggerPresent=php,phtml,php3; PHPSESSID=802c81f0rb9muod4cvvp7onr20; powercms_auth=41f1%2FJJz0r68%2FiSkzN8yyZsxYmeMtlgYvf6tS6xL3CSIQsFTlqPgredPqzbrYkewoRQiw96yEMEWXLcVgttSlATBgF3Gq595D7RkL%2BLHx9IO8%2BKfV6rGa8muT00gtwNbpzdTuqnsA7GqLycrDmyR; acc_auth=0";
 
     static Map<Integer, String> projectMap = Maps.newHashMap();
 
     static {
-        List<String> configProjectList = Lists.newArrayList("1:30:WRD037-P24027");
+        //茅台
+//        List<String> configProjectList = Lists.newArrayList("1:30:WRD037-P24027");
+        //中石化 手动配置1-30号，需要根据实际月的天数调整
+        List<String> configProjectList = Lists.newArrayList("1:2:WRD037-P24027","3:31:WRD040-P25012");
         for (String str : configProjectList) {
             String[] split = str.split(":");
             Integer start = Integer.valueOf(split[0]);
@@ -53,7 +57,7 @@ public class ApacheHttpClientPost {
     }
 
     public static void main(String[] args) throws Exception {
-        LocalDate startDate = LocalDate.of(2025, 6, 1);
+        LocalDate startDate = LocalDate.of(2025, 7, 1);
 //        LocalDate endDate = LocalDate.of(2025, 6, 15);
         LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
         int monthValue = startDate.getMonthValue();
