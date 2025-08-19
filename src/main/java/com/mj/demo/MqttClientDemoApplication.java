@@ -38,7 +38,7 @@ public class MqttClientDemoApplication implements CommandLineRunner {
     }
 
     private void sendWelcomeMessage() throws MqttException {
-        String topic = "spBv1.0/alcohol/NDATA/STN66_01";
+        String topic = "spBv1.0/sinopec/NDATA/STN66_01";
         Map params = Maps.newHashMap();
         params.put("message", "你的大哥已经上线了。(MQTT客户端已启动!)");
         String message = JSON.toJSONString(params);

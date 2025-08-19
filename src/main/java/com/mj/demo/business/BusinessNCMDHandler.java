@@ -30,9 +30,9 @@ public class BusinessNCMDHandler {
     AtomicInteger psbStart = new AtomicInteger(0);
 
     {
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0001").area("A101").build());
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0002").area("A102").build());
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0003").area("A103").build());
+        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0001").area("A101").build());
+        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0002").area("A102").build());
+        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0003").area("A103").build());
 //        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0004").area("A104").build());
 //        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0005").area("A105").build());
 
@@ -44,24 +44,30 @@ public class BusinessNCMDHandler {
 //        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0014").area("A105").build());
 
         //默认4个
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0001").area("B101").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0002").area("B102").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0003").area("B103").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0004").area("B104").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0005").area("B105").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PSB02N008S0006").area("B106").build());
+        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0010").area("B101").build());
+        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0011").area("B102").build());
+        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0012").area("B103").build());
+        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0013").area("B104").build());
+        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0014").area("B105").build());
+        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0015").area("B106").build());
 
     }
 
-    public RackAreaInfo getByRackType(String rackType) {
+    /**
+     * @param rackType
+     * @param isConsume 是否耗材
+     * @return
+     */
+    public RackAreaInfo getByRackType(String rackType, int isConsume) {
         RackAreaInfo result = null;
         if (rackType == null) {
             return null;
         }
-        if (rackType.equals("PWJ02")) {
+        //非耗材
+        if (rackType.equals("PYP10") && isConsume == 0) {
             //原始样盘
             result = getOne(pwjRackAreaInfoList, pwjStart);
-        } else if (rackType.equals("PSB02")) {
+        } else if (rackType.equals("PYP10") && isConsume == 1) {
             //耗材盘
             result = getOne(psbRackAreaInfoList, psbStart);
         }
@@ -116,7 +122,7 @@ public class BusinessNCMDHandler {
                         String rackType = (String) body.get("rackType");
                         log.info("------------耗材盘架申请库位 rackType:{}", rackType);
                         if (rackType != null) {
-                            byRackType = getByRackType(rackType);
+                            byRackType = getByRackType(rackType, 1);
                         }
                     }
 
