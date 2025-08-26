@@ -8,10 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,17 +20,27 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BusinessNCMDHandler {
     //默认分配的原始样品盘架和位置关联信息
-    List<RackAreaInfo> pwjRackAreaInfoList = Lists.newArrayList();
-    //耗材盘
-    List<RackAreaInfo> psbRackAreaInfoList = Lists.newArrayList();
+    //原始样品 溶样瓶
+    List<RackAreaInfo> pyp10OriginalList = Lists.newArrayList();
+    //耗材盘 溶样瓶
+    List<RackAreaInfo> pyp10List = Lists.newArrayList();
+    //耗材盘 色谱瓶
+    List<RackAreaInfo> pspList = Lists.newArrayList();
+    //耗材盘 色谱瓶盖
+    List<RackAreaInfo> ppgList = Lists.newArrayList();
+
+
     //默认其实标识
-    AtomicInteger pwjStart = new AtomicInteger(0);
-    AtomicInteger psbStart = new AtomicInteger(0);
+    AtomicInteger pyp10Start1 = new AtomicInteger(0);
+    AtomicInteger pyp10Start2 = new AtomicInteger(0);
+
+    AtomicInteger pspStart = new AtomicInteger(0);
+    AtomicInteger ppgStart = new AtomicInteger(0);
 
     {
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0001").area("A101").build());
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0002").area("A102").build());
-        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0003").area("A103").build());
+        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP10N032S0001").area("A101").build());
+        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP10N032S0002").area("A102").build());
+        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP10N032S0003").area("A103").build());
 //        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0004").area("A104").build());
 //        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0005").area("A105").build());
 
@@ -44,13 +52,24 @@ public class BusinessNCMDHandler {
 //        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0014").area("A105").build());
 
         //默认4个
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0010").area("B101").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0011").area("B102").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0012").area("B103").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0013").area("B104").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0014").area("B105").build());
-        psbRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PYP10N032S0015").area("B106").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0010").area("B101").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0011").area("B102").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0012").area("B103").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0013").area("B104").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0014").area("B105").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0015").area("B106").build());
 
+        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0001").area("A201").build());
+        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0002").area("A202").build());
+        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0003").area("A203").build());
+        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0004").area("A204").build());
+        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0005").area("A205").build());
+
+        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0001").area("B201").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0002").area("B202").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0003").area("B203").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0004").area("B204").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0005").area("B205").build());
     }
 
     /**
@@ -66,10 +85,16 @@ public class BusinessNCMDHandler {
         //非耗材
         if (rackType.equals("PYP10") && isConsume == 0) {
             //原始样盘
-            result = getOne(pwjRackAreaInfoList, pwjStart);
+            result = getOne(pyp10OriginalList, pyp10Start1);
         } else if (rackType.equals("PYP10") && isConsume == 1) {
             //耗材盘
-            result = getOne(psbRackAreaInfoList, psbStart);
+            result = getOne(pyp10List, pyp10Start2);
+        } else if (rackType.equals("PSP01") && isConsume == 1) {
+            //耗材盘 色谱瓶
+            result = getOne(pspList, pspStart);
+        } else if (rackType.equals("PPG01") && isConsume == 1) {
+            //耗材盘 色谱瓶盖
+            result = getOne(ppgList, ppgStart);
         }
         return result;
     }
@@ -88,7 +113,7 @@ public class BusinessNCMDHandler {
     public void processMessage(String topic, String payload) {
         MqttService mqttService = SpringUtils.getBean(MqttService.class);
 
-        List<Integer> dealSequenceList = Lists.newArrayList(308, 309);
+        List<Integer> dealSequenceList = Lists.newArrayList(454, 455, 456);
         try {
             //NCMD解析
             Map msg = JSON.parseObject(payload, Map.class);
@@ -108,7 +133,9 @@ public class BusinessNCMDHandler {
                 mqttService.publish(ndataTopic, publishMsg);
             } else if ("AllocationArea2".equals(strMethod)) {
                 Integer action = (Integer) body.get("action");
-                if (action == 2) {
+                log.info("------action:{}", action);
+                //1:申请入库，2:申请出库
+                if (action == 2 || action == 1) {
                     Integer sequenceId = (Integer) body.get("sequenceId");
                     String rackCode = (String) body.get("rackCode");
                     RackAreaInfo byRackType = null;
@@ -116,7 +143,7 @@ public class BusinessNCMDHandler {
                         //原始样品申请库位
                         log.info("------------原始样品申请库位 rackCode:{}", rackCode);
 //                        byRackType = getByRackType(rackCode.substring(0, 5));
-                        byRackType = pwjRackAreaInfoList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
+                        byRackType = pyp10OriginalList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
                     } else {
                         //耗材盘架申请库位
                         String rackType = (String) body.get("rackType");
@@ -127,7 +154,7 @@ public class BusinessNCMDHandler {
                     }
 
                     //对需要处理的序列进行上报，其他序列不处理
-                    if (dealSequenceList.contains(sequenceId)) {
+                    if (dealSequenceList.contains(sequenceId) || 1 == 1) {
                         if (byRackType == null) {
                             log.error("----------------不对库位询问进行上报-没有找到此盘架类型,序列:{}", sequenceId);
                             return;
@@ -137,6 +164,8 @@ public class BusinessNCMDHandler {
                                 "\"pointArea\":\"" + byRackType.getArea() + "\",\"targetArea\":\"" + byRackType.getArea() + "\"}},\"eventType\":\"reply\"}]}";
                         mqttService.publish(ndataTopic, allocationAreaMsg);
                     }
+                } else {
+                    //action=1
                 }
             } else if ("RackMove".equals(strMethod)) {
                 Integer action = (Integer) body.get("action");
