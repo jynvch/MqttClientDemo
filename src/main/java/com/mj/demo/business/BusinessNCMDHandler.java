@@ -143,7 +143,17 @@ public class BusinessNCMDHandler {
                         //原始样品申请库位
                         log.info("------------原始样品申请库位 rackCode:{}", rackCode);
 //                        byRackType = getByRackType(rackCode.substring(0, 5));
-                        byRackType = pyp10OriginalList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
+//                        byRackType = pyp10OriginalList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
+                        if ("PPG01".equals(rackCode.substring(0, 5))) {
+                            byRackType = ppgList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
+                        } else if ("PSP01".equals(rackCode.substring(0, 5))) {
+                            byRackType = pspList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
+                        } else if ("PYP10".equals(rackCode.substring(0, 5))) {
+                            List<RackAreaInfo> newPyp10List = Lists.newArrayList();
+                            newPyp10List.addAll(pyp10OriginalList);
+                            newPyp10List.addAll(pyp10List);
+                            byRackType = newPyp10List.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
+                        }
                     } else {
                         //耗材盘架申请库位
                         String rackType = (String) body.get("rackType");
@@ -164,12 +174,10 @@ public class BusinessNCMDHandler {
                                 "\"pointArea\":\"" + byRackType.getArea() + "\",\"targetArea\":\"" + byRackType.getArea() + "\"}},\"eventType\":\"reply\"}]}";
                         mqttService.publish(ndataTopic, allocationAreaMsg);
                     }
-                } else {
-                    //action=1
                 }
             } else if ("RackMove".equals(strMethod)) {
                 Integer action = (Integer) body.get("action");
-                if (action == 2) {
+                if (action == 2 || action == 1) {
                     String rackCode = (String) body.get("rackCode");
                     String pointArea = (String) body.get("pointArea");
                     String rackMoveMsg = "{\"services\":[{\"eventType\":\"reply\",\"eventTime\":\"20250627T121212Z\",\"eventParams\":" +
