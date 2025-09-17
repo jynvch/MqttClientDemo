@@ -122,6 +122,7 @@ public class BusinessNCMDHandler {
             log.info("NCMD解析-------------strMethod:{},strID:{}", strMethod, strID);
             Map body = JSON.parseObject(msg.get("body").toString(), Map.class);
 
+            //转为上报的topic
             String ndataTopic = topic.replace("NCMD", "NDATA");
             if ("Place".equals(strMethod)) {
                 //iray下发询问位置的时候返回
@@ -185,6 +186,21 @@ public class BusinessNCMDHandler {
                             "\"rackCode\":\"" + rackCode + "\",\"fromAreaCode\":\"" + pointArea + "\",\"targetAreaCode\":\"" + pointArea + "\"}}}]}";
                     mqttService.publish(ndataTopic, rackMoveMsg);
                 }
+            } else if ("SendConsumableRacks".equals(strMethod)) {
+                //收到下发补充耗材信息后回复200
+                String msg2 = "{ \n" +
+                        "    \"services\": [{\n" +
+                        "        \"eventType\": \"reply\", \n" +
+                        "        \"eventTime\": \"20240319T121212Z\",\n" +
+                        "        \"eventParams\": {\n" +
+                        "              \"strID\": \"" + strID + "\",\n" +
+                        "              \"strMethod\": \"SendConsumableRacks\",\n" +
+                        "              \"strCode\": 200\n" +
+                        "        }\n" +
+                        "    }] \n" +
+                        "}";
+                mqttService.publish(ndataTopic, msg2);
+                log.info("收到下发补充耗材信息后恢复200:{}", msg2);
             }
 
         } catch (Exception e) {
