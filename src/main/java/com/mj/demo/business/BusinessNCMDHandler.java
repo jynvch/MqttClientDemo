@@ -52,12 +52,12 @@ public class BusinessNCMDHandler {
 //        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0014").area("A105").build());
 
         //默认4个
-        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0010").area("B101").build());
-        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0011").area("B102").build());
-        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0012").area("B103").build());
-        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0013").area("B104").build());
-        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0014").area("B105").build());
-        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0015").area("B106").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0010").area("A301").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0011").area("A302").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0012").area("A303").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0013").area("A304").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0014").area("A305").build());
+        pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0015").area("A306").build());
 
         ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0001").area("A201").build());
         ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0002").area("A202").build());
@@ -65,11 +65,11 @@ public class BusinessNCMDHandler {
         ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0004").area("A204").build());
         ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0005").area("A205").build());
 
-        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0001").area("B201").build());
-        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0002").area("B202").build());
-        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0003").area("B203").build());
-        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0004").area("B204").build());
-        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0005").area("B205").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0001").area("A104").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0002").area("A105").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0003").area("A106").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0004").area("A107").build());
+//        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0005").area("B205").build());
     }
 
     /**
