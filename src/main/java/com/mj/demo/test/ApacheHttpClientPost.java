@@ -58,7 +58,7 @@ public class ApacheHttpClientPost {
     }
 
     public static void main(String[] args) throws Exception {
-        LocalDate startDate = LocalDate.of(2026, 6, 1);
+        LocalDate startDate = LocalDate.of(2026, 7, 1);
 //        LocalDate endDate = LocalDate.of(2025, 6, 15);
         LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
         int monthValue = startDate.getMonthValue();

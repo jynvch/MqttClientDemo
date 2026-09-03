@@ -38,9 +38,12 @@ public class BusinessNCMDHandler {
     AtomicInteger ppgStart = new AtomicInteger(0);
 
     {
-        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP10N032S0001").area("A101").build());
-        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP10N032S0002").area("A102").build());
-        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP10N032S0003").area("A103").build());
+        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP07N008S0001").area("A101").build());
+        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP07N008S0002").area("A102").build());
+        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP07N008S0003").area("A103").build());
+        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP07N008S0004").area("A104").build());
+        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP07N008S0005").area("A105").build());
+        pyp10OriginalList.add(RackAreaInfo.builder().rackCode("PYP07N008S0006").area("A201").build());
 //        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0004").area("A104").build());
 //        pwjRackAreaInfoList.add(RackAreaInfo.builder().rackCode("PWJ02N008S0005").area("A105").build());
 
@@ -59,16 +62,17 @@ public class BusinessNCMDHandler {
         pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0014").area("A305").build());
         pyp10List.add(RackAreaInfo.builder().rackCode("PYP10N032S0015").area("A306").build());
 
-        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0001").area("A201").build());
-        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0002").area("A202").build());
-        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0003").area("A203").build());
-        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0004").area("A204").build());
-        ppgList.add(RackAreaInfo.builder().rackCode("PPG01N032S0005").area("A205").build());
+        ppgList.add(RackAreaInfo.builder().rackCode("PSB06N032S0001").area("A201").build());
+        ppgList.add(RackAreaInfo.builder().rackCode("PSB06N032S0002").area("A202").build());
+        ppgList.add(RackAreaInfo.builder().rackCode("PSB06N032S0003").area("A203").build());
+        ppgList.add(RackAreaInfo.builder().rackCode("PSB06N032S0004").area("A204").build());
+        ppgList.add(RackAreaInfo.builder().rackCode("PSB06N032S0005").area("A205").build());
 
-        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0001").area("A104").build());
-        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0002").area("A105").build());
-        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0003").area("A106").build());
-        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0004").area("A107").build());
+        //
+        pspList.add(RackAreaInfo.builder().rackCode("PSB02N032S0001").area("D101").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSB02N032S0002").area("D102").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSB02N032S0003").area("D103").build());
+        pspList.add(RackAreaInfo.builder().rackCode("PSB02N032S0004").area("D104").build());
 //        pspList.add(RackAreaInfo.builder().rackCode("PSP01N032S0005").area("B205").build());
     }
 
@@ -83,18 +87,20 @@ public class BusinessNCMDHandler {
             return null;
         }
         //非耗材
-        if (rackType.equals("PYP10") && isConsume == 0) {
+        if (rackType.equals("PYP07") && isConsume == 0) {
             //原始样盘
             result = getOne(pyp10OriginalList, pyp10Start1);
-        } else if (rackType.equals("PYP10") && isConsume == 1) {
+        } else if (rackType.equals("PYP07") && isConsume == 1) {
             //耗材盘
             result = getOne(pyp10List, pyp10Start2);
-        } else if (rackType.equals("PSP01") && isConsume == 1) {
+        } else if (rackType.equals("PSB02") && isConsume == 1) {
             //耗材盘 色谱瓶
             result = getOne(pspList, pspStart);
-        } else if (rackType.equals("PPG01") && isConsume == 1) {
-            //耗材盘 色谱瓶盖
-            result = getOne(ppgList, ppgStart);
+        } else if (rackType.equals("PSB06") && isConsume == 1) {
+            synchronized ("PSB06") {
+                //耗材盘 色谱瓶盖
+                result = getOne(ppgList, ppgStart);
+            }
         }
         return result;
     }
@@ -145,14 +151,14 @@ public class BusinessNCMDHandler {
                         log.info("------------原始样品申请库位 rackCode:{}", rackCode);
 //                        byRackType = getByRackType(rackCode.substring(0, 5));
 //                        byRackType = pyp10OriginalList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
-                        if ("PPG01".equals(rackCode.substring(0, 5))) {
+                        if ("PSB06".equals(rackCode.substring(0, 5))) {//当前没用
                             byRackType = ppgList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
-                        } else if ("PSP01".equals(rackCode.substring(0, 5))) {
+                        } else if ("PSB02".equals(rackCode.substring(0, 5))) {
                             byRackType = pspList.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
-                        } else if ("PYP10".equals(rackCode.substring(0, 5))) {
+                        } else if ("PYP07".equals(rackCode.substring(0, 5))) {
                             List<RackAreaInfo> newPyp10List = Lists.newArrayList();
                             newPyp10List.addAll(pyp10OriginalList);
-                            newPyp10List.addAll(pyp10List);
+//                            newPyp10List.addAll(pyp10List);
                             byRackType = newPyp10List.stream().filter(v -> v.getRackCode().equals(rackCode)).collect(Collectors.toList()).get(0);
                         }
                     } else {
@@ -164,6 +170,17 @@ public class BusinessNCMDHandler {
                         }
                     }
 
+                    if (byRackType != null) {
+                        //1:申请入库，2:申请出库
+                        //出库位 C103 C104
+                        //入库位 C101 C102
+                        if (action == 2) {
+                            byRackType.setTargetArea("C104");
+                        } else {
+                            byRackType.setTargetArea("C102");
+                        }
+                    }
+
                     //对需要处理的序列进行上报，其他序列不处理
                     if (dealSequenceList.contains(sequenceId) || 1 == 1) {
                         if (byRackType == null) {
@@ -172,18 +189,27 @@ public class BusinessNCMDHandler {
                         }
                         String allocationAreaMsg = "{\"services\":[{\"eventTime\":\"20250611T091212Z\",\"eventParams\":{\"strID\":\"" + strID + "\"," +
                                 "\"strMethod\":\"AllocationArea2\",\"body\":{\"state\":0,\"rackCode\":\"" + byRackType.getRackCode() + "\"," +
-                                "\"pointArea\":\"" + byRackType.getArea() + "\",\"targetArea\":\"" + byRackType.getArea() + "\"}},\"eventType\":\"reply\"}]}";
+                                "\"pointArea\":\"" + byRackType.getArea() + "\",\"targetArea\":\"" + byRackType.getTargetArea() + "\"}},\"eventType\":\"reply\"}]}";
                         mqttService.publish(ndataTopic, allocationAreaMsg);
                     }
                 }
             } else if ("RackMove".equals(strMethod)) {
                 Integer action = (Integer) body.get("action");
+                //1:申请入库，2:申请出库
                 if (action == 2 || action == 1) {
                     String rackCode = (String) body.get("rackCode");
                     String pointArea = (String) body.get("pointArea");
+                    String targetArea = "";
+                    if (action == 2) {
+                        //出库位 C103 C104
+                        targetArea = "C103";
+                    } else {
+                        //入库位 C101 C102
+                        targetArea = "C101";
+                    }
                     String rackMoveMsg = "{\"services\":[{\"eventType\":\"reply\",\"eventTime\":\"20250627T121212Z\",\"eventParams\":" +
                             "{\"strID\":\"" + strID + "\",\"strMethod\":\"RackMove\",\"body\":{\"actionType\":4,\"state\":0," +
-                            "\"rackCode\":\"" + rackCode + "\",\"fromAreaCode\":\"" + pointArea + "\",\"targetAreaCode\":\"" + pointArea + "\"}}}]}";
+                            "\"rackCode\":\"" + rackCode + "\",\"fromAreaCode\":\"" + pointArea + "\",\"targetAreaCode\":\"" + targetArea + "\"}}}]}";
                     mqttService.publish(ndataTopic, rackMoveMsg);
                 }
             } else if ("SendConsumableRacks".equals(strMethod)) {
@@ -217,5 +243,6 @@ public class BusinessNCMDHandler {
     static class RackAreaInfo {
         private String rackCode;
         private String area;
+        private String targetArea;
     }
 }
