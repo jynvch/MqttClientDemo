@@ -34,14 +34,25 @@ public class ApacheHttpClientPost {
     //用户的cookie
     static String cookieStr = "Hm_lvt_a4471dcb99dc909bee559e7792f51c7f=1748227382; ZDEDebuggerPresent=php,phtml,php3; PHPSESSID=khqmrqv75vnclb5re7b07viqt3; powercms_auth=1ecd323CjqOboZH2wz5SMjOyHcI1OxNDtuFCdhGP%2BeuK0hWbfY%2Fw3N2zaZ3rL%2BKS14MpofsqpTWn5ZwTNXoy7pp772cu3qpedDnQ2JCugLzqwmdYmldvxTgPhSF9MP2Qdx%2FxAJaEBt5yaJTuUJ6F; acc_auth=0";
 
+    /**
+     * 号 对应的项目
+     */
     static Map<Integer, String> projectMap = Maps.newHashMap();
+    /**
+     * 不填工时的时间，默认为空
+     */
+    static List<Integer> notInputList = Lists.newArrayList(25);
 
     static {
         //茅台
 //        List<String> configProjectList = Lists.newArrayList("1:30:WRD037-P24027");
         //中石化 手动配置1-30号，需要根据实际月的天数调整
 //        List<String> configProjectList = Lists.newArrayList("1:13:WRD040-P25012","14:15:WRD037-P24027","16:31:WRD040-P25012");
-        List<String> configProjectList = Lists.newArrayList("1:31:RTP071-P25019-1");
+        //RTP071-P25019-1 京津冀土壤
+        //RRD077-P26007 通州环监站土壤项目
+//        List<String> configProjectList = Lists.newArrayList("1:31:RTP071-P25019-1");
+        List<String> configProjectList = Lists.newArrayList("1:6:RRD077-P26007", "7:14:RTP071-P25019-1", "15:30:RRD077-P26007");
+
         for (String str : configProjectList) {
             String[] split = str.split(":");
             Integer start = Integer.valueOf(split[0]);
@@ -79,6 +90,11 @@ public class ApacheHttpClientPost {
             String project = getProject(dayOfMonth);
             if (project == null) {
                 log.error("---------------------日期内没有配置项目，跳过。日期:{}", startDate);
+                continue;
+            }
+            if (notInputList.contains(dayOfMonth)) {
+                log.info("-----------节假日啥的设置跳过:{}", dayOfMonth);
+                startDate = startDate.plusDays(1);
                 continue;
             }
             reportEveryDay(uid, project, year, monthValue, dayOfMonth);
