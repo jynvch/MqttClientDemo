@@ -97,22 +97,23 @@ public class BusinessNCMDHandler {
             //耗材盘 色谱瓶
             result = getOne(pspList, pspStart);
         } else if (rackType.equals("PSB06") && isConsume == 1) {
-            synchronized ("PSB06") {
-                //耗材盘 色谱瓶盖
-                result = getOne(ppgList, ppgStart);
-            }
+            //耗材盘 色谱瓶盖
+            result = getOne(ppgList, ppgStart);
         }
         return result;
     }
 
     public RackAreaInfo getOne(List<RackAreaInfo> list, AtomicInteger startValue) {
-        if (startValue.get() < list.size() - 1) {
-            int start = startValue.getAndIncrement();
-            return list.get(start);
-        } else {
-            //循环获取
-            startValue.set(0);
-            return list.get(0);
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        while (true) {
+            //CAS保证并发下每次只有一个线程能拿到当前index，避免重复分配
+            int current = startValue.get();
+            int next = (current + 1) % list.size();
+            if (startValue.compareAndSet(current, next)) {
+                return list.get(current);
+            }
         }
     }
 
